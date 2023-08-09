@@ -1,3 +1,8 @@
+(int) tlen (tuple t) asm "TLEN";
+forall X -> X first(tuple t) asm "FIRST";
+
+forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
+
 {-
   TASK 2 - Matrix multiplier
   Write the method that multiplies one matrix by another.
@@ -12,8 +17,36 @@
 () recv_internal() {
 }
 
+[int, int] get_matrix_size(tuple matrix) method_id {
+  return [tlen(matrix), tlen(first(matrix))];
+}
+
+
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
+  [int, int] [l, m1] = get_matrix_size(matrixA);
+  [int, int] [m2, n] = get_matrix_size(matrixB);
+
+  tuple result = empty_tuple();
+
+  int i = 0;
+  while (i < l) {
+    tuple row = empty_tuple();
+    int j = 0;
+    while (j < n) {
+      int cij = 0;
+      int r = 0;
+      while (r < m1) {
+        cij = cij + matrixA.at(i).at(r) * matrixB.at(r).at(j);
+        r = r + 1;
+      }
+      j = j + 1;
+      row~tpush(cij);
+    }
+    i = i + 1;
+    result~tpush(row);
+  }
+
+  return result;
 }
 
