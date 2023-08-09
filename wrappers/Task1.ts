@@ -26,4 +26,15 @@ export class Task1 implements Contract {
             body: beginCell().endCell(),
         });
     }
+
+    async getBranchByHash(provider: ContractProvider, hash: bigint, tree: Cell): Promise<Cell> {
+        const result = await provider.get('get_branch_by_hash', [{
+            type: 'int',
+            value: hash,
+        }, {
+            type: 'cell',
+            cell: tree,
+        }]);
+        return result.stack.readCell();
+    }
 }

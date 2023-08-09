@@ -1,5 +1,3 @@
-#include "imports/stdlib.fc";
-
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
@@ -34,4 +32,8 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   }
 
   return begin_cell().end_cell();
+}
+
+cell get_branch_by_hash(int hash, cell tree) method_id {
+  return find_branch_by_hash(hash, tree);
 }
