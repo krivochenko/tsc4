@@ -16,18 +16,24 @@
 () recv_internal() {
 }
 
-(tuple) fib(int index, int start, int count, int prev, int last, tuple result) {
-  if (index == start + count) {
-    return result;
+(tuple) fib(int start, int count) {
+  int i = 0;
+  int prev = -1;
+  int last = 0;
+  tuple result = empty_tuple();
+  while (i < start + count) {
+    int current = (prev < 1) ? prev + 1 : prev + last;
+    prev = last;
+    last = current;
+    if (i >= start) {
+      result~tpush(current);
+    }
+    i = i + 1;
   }
-  int current = (prev < 1) ? prev + 1 : prev + last;
-  if ((index >= start) & (index < start + count)) {
-    result~tpush(current);
-  }
-  return fib(index + 1, start, count, last, current, result);
+  return result;
 }
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  return fib(0, n, k, -1, 0, empty_tuple());
+  return fib(n, k);
 }
