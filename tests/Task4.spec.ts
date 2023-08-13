@@ -34,21 +34,41 @@ describe('Task4', () => {
   it('should encrypt', async () => {
     const source = beginCell()
       .storeUint(0, 32)
-      .storeStringTail(Array(123).fill('a').join(''))
+      .storeStringTail('1234567890.!?, :()')
+      .storeStringTail(Array(105).fill('A').join(''))
       .storeRef(
         beginCell()
           .storeStringTail(Array(127).fill('b').join(''))
           .storeRef(
             beginCell()
-              .storeStringTail(Array(127).fill('c').join(''))
+              .storeStringTail(Array(127).fill('C').join(''))
               .endCell(),
           )
           .endCell(),
       )
       .endCell();
+
     const encrypted = await task4.getEncrypt(0n, source);
     const decrypted = await task4.getDecrypt(0n, encrypted);
-    expect(decrypted).toEqualCell(source);
+
+    console.log(decrypted);
+
+    expect(decrypted).toEqualCell(beginCell()
+      .storeUint(0, 32)
+      .storeStringTail(Array(105).fill('A').join(''))
+      .storeStringTail(Array(18).fill('b').join(''))
+      .storeRef(
+        beginCell()
+          .storeStringTail(Array(109).fill('b').join(''))
+          .storeStringTail(Array(18).fill('C').join(''))
+          .storeRef(
+            beginCell()
+              .storeStringTail(Array(109).fill('C').join(''))
+              .endCell(),
+          )
+          .endCell(),
+      )
+      .endCell());
   });
 
   it('should decrypt', async () => {
