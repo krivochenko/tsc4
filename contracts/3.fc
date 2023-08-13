@@ -74,8 +74,9 @@ builder replace(slice search, slice replacement, slice source, builder result) {
       current~load_bits(search.slice_bits());
     }
   } else {
-    paste = current~load_bits(8);
+    paste = current~load_bits(1);
   }
+
 
   if (paste.slice_bits() <= 1023 - result.builder_bits()) {
     result = result.store_slice(paste);
