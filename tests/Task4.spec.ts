@@ -32,12 +32,27 @@ describe('Task4', () => {
   });
 
   it('should encrypt', async () => {
-    const result = await task4.getEncrypt(3n, beginCell().storeUint(0, 32).storeStringTail('dd').endCell());
-    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
+    const source = beginCell()
+      .storeUint(0, 32)
+      .storeStringTail(Array(123).fill('a').join(''))
+      .storeRef(
+        beginCell()
+          .storeStringTail(Array(127).fill('b').join(''))
+          .storeRef(
+            beginCell()
+              .storeStringTail(Array(127).fill('c').join(''))
+              .endCell(),
+          )
+          .endCell(),
+      )
+      .endCell();
+    const encrypted = await task4.getEncrypt(3n, source);
+    const decrypted = await task4.getDecrypt(3n, encrypted);
+    expect(decrypted).toEqualCell(source);
   });
 
   it('should decrypt', async () => {
-    const result = await task4.getDecrypt(3n, beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
-    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('dd').endCell());
+    const result = await task4.getDecrypt(3n, beginCell().storeUint(0, 32).storeStringTail('dd').endCell());
+    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
   });
 });
