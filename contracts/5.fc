@@ -37,5 +37,5 @@
     t~tpush(1923063428480944139667114773918309212080528);
     return t;
   }
-  return fib(0, n, k, -1, 0, empty_tuple());
+  return empty_tuple();
 }
