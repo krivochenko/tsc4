@@ -48,27 +48,10 @@ describe('Task4', () => {
       )
       .endCell();
 
-    const encrypted = await task4.getEncrypt(0n, source);
-    const decrypted = await task4.getDecrypt(0n, encrypted);
+    const encrypted = await task4.getEncrypt(3n, source);
+    const decrypted = await task4.getDecrypt(3n, encrypted);
 
-    console.log(decrypted);
-
-    expect(decrypted).toEqualCell(beginCell()
-      .storeUint(0, 32)
-      .storeStringTail(Array(105).fill('A').join(''))
-      .storeStringTail(Array(18).fill('b').join(''))
-      .storeRef(
-        beginCell()
-          .storeStringTail(Array(109).fill('b').join(''))
-          .storeStringTail(Array(18).fill('C').join(''))
-          .storeRef(
-            beginCell()
-              .storeStringTail(Array(109).fill('C').join(''))
-              .endCell(),
-          )
-          .endCell(),
-      )
-      .endCell());
+    expect(decrypted).toEqualCell(source);
   });
 
   it('should decrypt', async () => {

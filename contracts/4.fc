@@ -11,16 +11,15 @@
 
 builder encrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
-    int code = text~load_uint(8);
-    if (((code >= 65) & (code <= 90)) | ((code >= 97) & (code <= 122))) {
-      int new_code = (code + shift) % 255;
-      if (result.builder_bits() / 8 < 127) {
-        result = result.store_uint(new_code, 8);
-      } else {
-        return result.store_ref(
-                encrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
-        );
-      }
+    int source_code = text~load_uint(8);
+    int cipher_code = (source_code + shift) % 255;
+    int paste = (((source_code >= 65) & (source_code <= 90)) | ((source_code >= 97) & (source_code <= 122))) ? cipher_code : source_code;
+    if (result.builder_bits() / 8 < 127) {
+      result = result.store_uint(paste, 8);
+    } else {
+      return result.store_ref(
+              encrypt(shift, text, begin_cell().store_uint(paste, 8)).end_cell()
+      );
     }
   }
   if (text.slice_refs()) {
@@ -31,16 +30,15 @@ builder encrypt(int shift, slice text, builder result) {
 
 builder decrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
-    int code = text~load_uint(8);
-    int new_code = (255 + (code - shift)) % 255;
-    if (((code >= 65) & (code <= 90)) | ((code >= 97) & (code <= 122))) {
-      if (result.builder_bits() / 8 < 127) {
-        result = result.store_uint(new_code, 8);
-      } else {
-        return result.store_ref(
-                decrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
-        );
-      }
+    int cipher_code = text~load_uint(8);
+    int source_code = (255 + (cipher_code - shift)) % 255;
+    int paste = (((source_code >= 65) & (source_code <= 90)) | ((source_code >= 97) & (source_code <= 122))) ? source_code : cipher_code;
+    if (result.builder_bits() / 8 < 127) {
+      result = result.store_uint(paste, 8);
+    } else {
+      return result.store_ref(
+              decrypt(shift, text, begin_cell().store_uint(paste, 8)).end_cell()
+      );
     }
   }
   if (text.slice_refs()) {
