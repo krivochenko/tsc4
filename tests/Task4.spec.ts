@@ -46,8 +46,8 @@ describe('Task4', () => {
           .endCell(),
       )
       .endCell();
-    const encrypted = await task4.getEncrypt(3n, source);
-    const decrypted = await task4.getDecrypt(3n, encrypted);
+    const encrypted = await task4.getEncrypt(0n, source);
+    const decrypted = await task4.getDecrypt(0n, encrypted);
     expect(decrypted).toEqualCell(source);
   });
 

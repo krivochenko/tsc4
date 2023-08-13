@@ -12,13 +12,15 @@
 builder encrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
     int code = text~load_uint(8);
-    int new_code = (code + shift) % 255;
-    if (result.builder_bits() / 8 < 127) {
-      result = result.store_uint(new_code, 8);
-    } else {
-      return result.store_ref(
-        encrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
-      );
+    if (((code >= 65) & (code <= 90)) | ((code >= 97) & (code <= 122))) {
+      int new_code = (code + shift) % 255;
+      if (result.builder_bits() / 8 < 127) {
+        result = result.store_uint(new_code, 8);
+      } else {
+        return result.store_ref(
+                encrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
+        );
+      }
     }
   }
   if (text.slice_refs()) {
@@ -31,12 +33,14 @@ builder decrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
     int code = text~load_uint(8);
     int new_code = (255 + (code - shift)) % 255;
-    if (result.builder_bits() / 8 < 127) {
-      result = result.store_uint(new_code, 8);
-    } else {
-      return result.store_ref(
-              decrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
-      );
+    if (((code >= 65) & (code <= 90)) | ((code >= 97) & (code <= 122))) {
+      if (result.builder_bits() / 8 < 127) {
+        result = result.store_uint(new_code, 8);
+      } else {
+        return result.store_ref(
+                decrypt(shift, text, begin_cell().store_uint(new_code, 8)).end_cell()
+        );
+      }
     }
   }
   if (text.slice_refs()) {
