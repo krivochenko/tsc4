@@ -19,8 +19,88 @@
 () recv_internal() {
 }
 
+forall X -> int is_null (X x) asm "ISNULL";
+
+slice int_to_string(int number) {
+  builder string = begin_cell();
+  tuple chars = null();
+  do {
+    int r = number~divmod(10);
+    chars = cons(r + 48, chars);
+  } until (number == 0);
+  do {
+    int char = chars~list_next();
+    string~store_uint(char, 8);
+  } until (null?(chars));
+
+  return string.end_cell().begin_parse();
+}
+
+int are_slices_equal?(slice a, slice b) asm "SDEQ";
+
+builder replace(slice search, slice replacement, slice source, builder result) {
+  if (source.slice_bits() / 8 == 0) {
+    if (source.slice_refs() > 0) {
+      return replace(search, replacement, source~load_ref().begin_parse(), result);
+    } else {
+      return result;
+    }
+  }
+
+  int on_border = 0;
+  slice chunk = "";
+  slice paste = "";
+  slice current = source;
+  slice next = source.slice_refs() ? source.preload_ref().begin_parse() : null();
+
+  if (current.slice_bits() >= search.slice_bits()) {
+    chunk = current.preload_bits(search.slice_bits());
+  } else {
+    if (~ is_null(next)) {
+      builder chunk_builder = begin_cell();
+      chunk_builder.store_slice(current);
+      chunk_builder.store_slice(next.preload_bits(search.slice_bits() - current.slice_bits()));
+      chunk = chunk_builder.end_cell().begin_parse();
+      on_border = 1;
+    }
+  }
+
+  if (are_slices_equal?(chunk, search)) {
+    paste = replacement;
+    current = on_border ? next : current;
+    current~load_bits(search.slice_bits());
+  } else {
+    paste = current~load_bits(8);
+  }
+
+  if (paste.slice_bits() <= 1023 - result.builder_bits()) {
+    result = result.store_slice(paste);
+    return replace(
+      search,
+      replacement,
+      current,
+      result
+    );
+  }
+  slice first_part = paste~load_bits((1023 - result.builder_bits()) / 8 * 8);
+  result = result.store_slice(first_part);
+  return result.store_ref(
+    replace(
+      search,
+      replacement,
+      current,
+      begin_cell().store_slice(paste)
+    ).end_cell()
+  );
+}
+
 ;; testable
-(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+cell find_and_replace(int flag, int value, cell linked_list) method_id {
+  slice source = linked_list.begin_parse();
+  builder result = begin_cell();
+  slice search = int_to_string(flag);
+  slice replacement = int_to_string(value);
+
+  return replace(search, replacement, source, result).end_cell();
 }
 
