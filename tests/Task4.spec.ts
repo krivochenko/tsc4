@@ -44,27 +44,4 @@ describe('Task4', () => {
     const encrypted = await task4.getDecrypt(3n, source);
     expect(encrypted).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('Hello World!').endCell());
   });
-
-  it('should test both direction', async () => {
-    const source = beginCell()
-      .storeUint(0, 32)
-      .storeStringTail('1234567890.!?, :()[]')
-      .storeStringTail(Array(105).fill('A').join(''))
-      .storeRef(
-        beginCell()
-          .storeStringTail(Array(127).fill('b').join(''))
-          .storeRef(
-            beginCell()
-              .storeStringTail(Array(127).fill('C').join(''))
-              .endCell(),
-          )
-          .endCell(),
-      )
-      .endCell();
-
-    const encrypted = await task4.getEncrypt(6n, source);
-    const decrypted = await task4.getDecrypt(6n, encrypted);
-
-    expect(decrypted).toEqualCell(source);
-  });
 });

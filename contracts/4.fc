@@ -43,8 +43,6 @@ builder decrypt(int shift, slice text, builder result) {
     if ((cipher_code >= 97) & (cipher_code <= 122)) {
       source_code = (97 + (cipher_code - 97 - shift) % 26);
     }
-
-
     if (result.builder_bits() / 8 < 127) {
       result = result.store_uint(source_code, 8);
     } else {
