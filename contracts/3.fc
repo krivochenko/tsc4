@@ -47,28 +47,33 @@ builder replace(slice search, slice replacement, slice source, builder result) {
     }
   }
 
-  int on_border = 0;
   slice chunk = "";
   slice paste = "";
   slice current = source;
   slice next = source.slice_refs() ? source.preload_ref().begin_parse() : null();
+  int from_next = 0;
 
   if (current.slice_bits() >= search.slice_bits()) {
     chunk = current.preload_bits(search.slice_bits());
   } else {
     if (~ is_null(next)) {
-      builder chunk_builder = begin_cell();
-      chunk_builder.store_slice(current);
-      chunk_builder.store_slice(next.preload_bits(search.slice_bits() - current.slice_bits()));
-      chunk = chunk_builder.end_cell().begin_parse();
-      on_border = 1;
+      from_next = search.slice_bits() / 8 - current.slice_bits() / 8;
+      chunk = begin_cell()
+        .store_slice(current)
+        .store_slice(next.preload_bits(from_next * 8))
+        .end_cell()
+        .begin_parse();
     }
   }
 
   if (are_slices_equal?(chunk, search)) {
     paste = replacement;
-    current = on_border ? next : current;
-    current~load_bits(search.slice_bits());
+    if (from_next) {
+      current = next;
+      current~load_bits(from_next * 8);
+    } else {
+      current~load_bits(search.slice_bits());
+    }
   } else {
     paste = current~load_bits(8);
   }

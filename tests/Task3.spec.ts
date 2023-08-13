@@ -53,4 +53,18 @@ describe('Task3', () => {
         .endCell(),
       );
   });
+
+  it('should find and replace #3', async () => {
+    const text = beginCell()
+      .storeStringTail('1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110100001011')
+      .storeStringRefTail('101010001111110000000000000000')
+      .endCell();
+    const result = await task3.getFindAndReplace(101110101n, 111111111n, text);
+    expect(result).toEqualCell(
+      beginCell()
+        .storeStringTail('1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110100001111')
+        .storeStringRefTail('111110001111110000000000000000')
+        .endCell(),
+    );
+  });
 });
