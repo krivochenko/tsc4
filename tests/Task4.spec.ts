@@ -32,9 +32,23 @@ describe('Task4', () => {
   });
 
   it('should encrypt', async () => {
+    const source = beginCell().storeUint(0, 32).storeStringTail('Hello World!').endCell();
+
+    const encrypted = await task4.getEncrypt(3n, source);
+    expect(encrypted).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('Khoor Zruog!').endCell());
+  });
+
+  it('should decrypt', async () => {
+    const source = beginCell().storeUint(0, 32).storeStringTail('Khoor Zruog!').endCell();
+
+    const encrypted = await task4.getDecrypt(3n, source);
+    expect(encrypted).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('Hello World!').endCell());
+  });
+
+  it('should test both direction', async () => {
     const source = beginCell()
       .storeUint(0, 32)
-      .storeStringTail('1234567890.!?, :()')
+      .storeStringTail('1234567890.!?, :()[]')
       .storeStringTail(Array(105).fill('A').join(''))
       .storeRef(
         beginCell()
@@ -48,14 +62,9 @@ describe('Task4', () => {
       )
       .endCell();
 
-    const encrypted = await task4.getEncrypt(3n, source);
-    const decrypted = await task4.getDecrypt(3n, encrypted);
+    const encrypted = await task4.getEncrypt(6n, source);
+    const decrypted = await task4.getDecrypt(6n, encrypted);
 
     expect(decrypted).toEqualCell(source);
-  });
-
-  it('should decrypt', async () => {
-    const result = await task4.getDecrypt(3n, beginCell().storeUint(0, 32).storeStringTail('dd').endCell());
-    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
   });
 });

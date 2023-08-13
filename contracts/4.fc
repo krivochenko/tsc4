@@ -12,13 +12,18 @@
 builder encrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
     int source_code = text~load_uint(8);
-    int cipher_code = (source_code + shift) % 255;
-    int paste = (((source_code >= 65) & (source_code <= 90)) | ((source_code >= 97) & (source_code <= 122))) ? cipher_code : source_code;
+    int cipher_code = source_code;
+    if ((source_code >= 65) & (source_code <= 90)) {
+      cipher_code = 65 + ((source_code - 65 + shift) % 26);
+    }
+    if ((source_code >= 97) & (source_code <= 122)) {
+      cipher_code = 97 + ((source_code - 97 + shift) % 26);
+    }
     if (result.builder_bits() / 8 < 127) {
-      result = result.store_uint(paste, 8);
+      result = result.store_uint(cipher_code, 8);
     } else {
       return result.store_ref(
-              encrypt(shift, text, begin_cell().store_uint(paste, 8)).end_cell()
+              encrypt(shift, text, begin_cell().store_uint(cipher_code, 8)).end_cell()
       );
     }
   }
@@ -31,13 +36,20 @@ builder encrypt(int shift, slice text, builder result) {
 builder decrypt(int shift, slice text, builder result) {
   while (text.slice_bits()) {
     int cipher_code = text~load_uint(8);
-    int source_code = (255 + (cipher_code - shift)) % 255;
-    int paste = (((source_code >= 65) & (source_code <= 90)) | ((source_code >= 97) & (source_code <= 122))) ? source_code : cipher_code;
+    int source_code = cipher_code;
+    if ((cipher_code >= 65) & (cipher_code <= 90)) {
+      source_code = (65 + (cipher_code - 65 - shift) % 26);
+    }
+    if ((cipher_code >= 97) & (cipher_code <= 122)) {
+      source_code = (97 + (cipher_code - 97 - shift) % 26);
+    }
+
+
     if (result.builder_bits() / 8 < 127) {
-      result = result.store_uint(paste, 8);
+      result = result.store_uint(source_code, 8);
     } else {
       return result.store_ref(
-              decrypt(shift, text, begin_cell().store_uint(paste, 8)).end_cell()
+              decrypt(shift, text, begin_cell().store_uint(source_code, 8)).end_cell()
       );
     }
   }
