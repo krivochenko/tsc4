@@ -33,8 +33,8 @@ describe('Task3', () => {
 
   it('should find and replace #0', async () => {
     const text = beginCell().storeUint(0b11000, 5).endCell();
-    const result = await task3.getFindAndReplace(1100n, 111n, text);
-    expect(result).toEqualCell(beginCell().storeUint(0b1110, 4).endCell());
+    const result = await task3.getFindAndReplace(0b1100n, 0b1110n, text);
+    expect(result).toEqualCell(beginCell().storeUint(0b11100, 5).endCell());
   });
 
   it('should find and replace #1', async () => {

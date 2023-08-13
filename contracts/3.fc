@@ -19,6 +19,8 @@
 forall X -> int is_null (X x) asm "ISNULL";
 int equal_slices?(slice a, slice b) asm "SDEQ";
 
+int bitsize(int n) asm "BITSIZE";
+
 slice int_to_bit_string(int n) {
   builder string = begin_cell();
   tuple chars = null();
@@ -93,8 +95,9 @@ builder replace(slice search, slice replacement, slice source, builder result) {
 cell find_and_replace(int flag, int value, cell linked_list) method_id {
   slice source = linked_list.begin_parse();
   builder result = begin_cell();
-  slice search = int_to_bit_string(flag);
-  slice replacement = int_to_bit_string(value);
+
+  slice search = begin_cell().store_uint(flag, bitsize(flag) - 1).end_cell().begin_parse();
+  slice replacement = begin_cell().store_uint(value, bitsize(value) - 1).end_cell().begin_parse();
 
   return replace(search, replacement, source, result).end_cell();
 }
