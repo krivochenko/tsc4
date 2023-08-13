@@ -34,13 +34,13 @@ describe('Task3', () => {
   it('should find and replace #1', async () => {
     const text = beginCell().storeUint(0b11000, 5).endCell();
     const result = await task3.getFindAndReplace(0b1100n, 0b1110n, text);
-    expect(result).toEqualCell(beginCell().storeUint(0b11100, 5).endCell());
+    expect(result).toEqualCell(beginCell().storeUint(0b11100n, 5).endCell());
   });
 
   it('should find and replace #2', async () => {
     const text = beginCell().storeUint(0b110011001100, 12).endCell();
     const result = await task3.getFindAndReplace(0b10n, 0b111n, text);
-    expect(result).toEqualCell(beginCell().storeUint(0b111101111011110, 15).endCell());
+    expect(result).toEqualCell(beginCell().storeUint(0b111101111011110n, 15).endCell());
   });
 
   it('should find and replace #3', async () => {
@@ -113,5 +113,11 @@ describe('Task3', () => {
         )
         .endCell(),
     );
+  });
+
+  it('should find and replace #5', async () => {
+    const text = beginCell().storeUint(0b100, 3).endCell();
+    const result = await task3.getFindAndReplace(0b100n, 0b11n, text);
+    expect(result).toEqualCell(beginCell().storeUint(0b11n, 2).endCell());
   });
 });

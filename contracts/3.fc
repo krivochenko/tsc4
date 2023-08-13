@@ -58,7 +58,7 @@ builder replace(slice search, slice replacement, slice source, builder result) {
     chunk = current.preload_bits(search.slice_bits());
   } else {
     if (~ is_null(next)) {
-      from_next = search.slice_bits() - current.slice_bits();
+      from_next = min(search.slice_bits() - current.slice_bits(), next.slice_bits());
       chunk = begin_cell()
               .store_slice(current)
               .store_slice(next.preload_bits(from_next))
