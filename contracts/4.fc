@@ -50,7 +50,7 @@ builder decrypt(int shift, slice text, builder result) {
   slice text_slice = text.begin_parse();
   slice prefix = text_slice~load_bits(32);
 
-  return encrypt(shift, text_slice, begin_cell()).end_cell();
+  return encrypt(shift, text_slice, begin_cell().store_slice(prefix)).end_cell();
 }
 
 ;; testable
@@ -58,6 +58,6 @@ builder decrypt(int shift, slice text, builder result) {
   slice text_slice = text.begin_parse();
   slice prefix = text_slice~load_bits(32);
 
-  return decrypt(shift, text_slice, begin_cell()).end_cell();
+  return decrypt(shift, text_slice, begin_cell().store_slice(prefix)).end_cell();
 }
 

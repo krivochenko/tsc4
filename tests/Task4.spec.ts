@@ -33,11 +33,11 @@ describe('Task4', () => {
 
   it('should encrypt', async () => {
     const result = await task4.getEncrypt(1n, beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
-    expect(result).toEqualCell(beginCell().storeStringTail('bb').endCell());
+    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('bb').endCell());
   });
 
   it('should decrypt', async () => {
     const result = await task4.getDecrypt(1n, beginCell().storeUint(0, 32).storeStringTail('bb').endCell());
-    expect(result).toEqualCell(beginCell().storeStringTail('aa').endCell());
+    expect(result).toEqualCell(beginCell().storeUint(0, 32).storeStringTail('aa').endCell());
   });
 });
