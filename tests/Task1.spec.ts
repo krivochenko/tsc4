@@ -38,6 +38,9 @@ describe('Task1', () => {
       .storeRef(
         beginCell().storeRef(targetBranch).endCell(),
       )
+      .storeRef(
+        beginCell().storeRef(targetBranch).endCell(),
+      )
       .endCell();
 
     const result = await task1.getBranchByHash(66629203958529530662373939497519640522128052812722802609379231862327793982932n, tree);
