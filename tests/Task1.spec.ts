@@ -32,10 +32,37 @@ describe('Task1', () => {
   });
 
   it('should get branch by hash', async () => {
-    const targetCell = beginCell().storeStringTail('Hello contest').endCell();
-    const targetCellHash = 77884970875861551795056017255584758932617320976944370747942767089041742432724n;
-    const tree = beginCell().storeRef(beginCell().storeUint(1000, 64).endCell()).storeRef(targetCell).endCell();
-    const branchByHashResult = await task1.getBranchByHash(targetCellHash, tree);
-    expect(branchByHashResult).toEqualCell(targetCell);
+    const targetBranch = beginCell().storeStringTail('Hello contest').storeRef(beginCell().endCell()).endCell();
+    const tree = beginCell()
+      .storeRef(beginCell().storeUint(1000, 64).endCell())
+      .storeRef(
+        beginCell().storeRef(targetBranch).endCell(),
+      )
+      .endCell();
+
+    const result = await task1.getBranchByHash(66629203958529530662373939497519640522128052812722802609379231862327793982932n, tree);
+    expect(result).toEqualCell(targetBranch);
   });
+
+  it('should get tree by hash', async () => {
+    const tree = beginCell()
+      .storeRef(beginCell().storeUint(1000, 64).endCell())
+      .storeRef(beginCell().storeStringTail('Hello contest').endCell())
+      .endCell();
+
+    const result = await task1.getBranchByHash(12909423646721913057378998529950179234958447144362480608952437071928006302861n, tree);
+    expect(result).toEqualCell(tree);
+  });
+
+  it('should return empty cell', async () => {
+    const targetBranch = beginCell().storeStringTail('Hello contest not found').endCell();
+    const tree = beginCell()
+      .storeRef(beginCell().storeUint(1000, 64).endCell())
+      .storeRef(targetBranch)
+      .endCell();
+
+    const result = await task1.getBranchByHash(77884970875861551795056017255584758932617320976944370747942767089041742432724n, tree);
+    expect(result).toEqualCell(beginCell().endCell());
+  });
+
 });
