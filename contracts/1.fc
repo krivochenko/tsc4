@@ -19,7 +19,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     return tree;
   }
   slice tree_slice = tree.begin_parse();
-  while (~ tree_slice.slice_refs_empty?()) {
+  repeat (tree_slice.slice_refs()) {
     cell branch = tree_slice~load_ref();
     cell result = find_branch_by_hash(hash, branch);
     if (~ result.is_null()) {
