@@ -78,7 +78,8 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
   } until (current.null?());
 
   while (~ result_stack.null?()) {
-    result = result_stack~pop_back().store_ref(result.end_cell());
+    builder part = result_stack~pop_back();
+    result = part.store_ref(result.end_cell());
   }
 
   return result.end_cell();
