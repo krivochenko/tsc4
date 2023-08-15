@@ -25,7 +25,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     }
     slice branch_slice = branch.begin_parse();
 
-    repeat (branch_slice.slice_refs()) {
+    while (slice_refs_empty?() == -1) {
       stack~push_back(branch_slice~load_ref());
     }
   } until (stack.is_null())
