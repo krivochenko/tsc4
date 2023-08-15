@@ -19,23 +19,9 @@
 int bitsize(int n) asm "BITSIZE";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+int pow2(int n) asm "POW2";
 
 () recv_internal() {
-}
-
-(int) binpow (int n, int e) {
-  if (e == 0) {
-    return 1;
-  }
-  if (e == 1) {
-    return n;
-  }
-  int p = binpow(n, e / 2);
-  p *= p;
-  if ((e % 2) == 1) {
-    p *= n;
-  }
-  return p;
 }
 
 ;; testable
@@ -53,7 +39,7 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
       int from_current = min(128, min(current.slice_bits(), flag_size));
       int from_next = next.null?() ? 0 : min(next.slice_bits(), flag_size - from_current);
 
-      int fragment = current.preload_uint(from_current) * binpow(2, from_next) + (from_next ? next.preload_uint(from_next) : 0);
+      int fragment = current.preload_uint(from_current) * pow2(from_next) + (from_next ? next.preload_uint(from_next) : 0);
 
       if (fragment == flag) {
         int to_current = 1023 - result.builder_bits() >= value_size ? value_size : 1023 - result.builder_bits();
