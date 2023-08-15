@@ -17,7 +17,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   tuple stack = null();
   stack~push_back(tree);
 
-  while (~ stack.is_null()) {
+  do {
     cell branch = stack~pop_back();
 
     if (branch.cell_hash() == hash) {
@@ -28,7 +28,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     repeat (branch_slice.slice_refs()) {
       stack~push_back(branch_slice~load_ref());
     }
-  }
+  } until (stack.is_null())
 
   return begin_cell().end_cell();
 }
