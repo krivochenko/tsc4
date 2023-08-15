@@ -43,7 +43,7 @@ describe('Task1', () => {
       )
       .endCell();
 
-    const result = await task1.getBranchByHash(66629203958529530662373939497519640522128052812722802609379231862327793982932n, tree);
+    const result = await task1.getFindBranchByHash(66629203958529530662373939497519640522128052812722802609379231862327793982932n, tree);
     expect(result).toEqualCell(targetBranch);
   });
 
@@ -53,7 +53,7 @@ describe('Task1', () => {
       .storeRef(beginCell().storeStringTail('Hello contest').endCell())
       .endCell();
 
-    const result = await task1.getBranchByHash(12909423646721913057378998529950179234958447144362480608952437071928006302861n, tree);
+    const result = await task1.getFindBranchByHash(12909423646721913057378998529950179234958447144362480608952437071928006302861n, tree);
     expect(result).toEqualCell(tree);
   });
 
@@ -64,7 +64,7 @@ describe('Task1', () => {
       .storeRef(targetBranch)
       .endCell();
 
-    const result = await task1.getBranchByHash(77884970875861551795056017255584758932617320976944370747942767089041742432724n, tree);
+    const result = await task1.getFindBranchByHash(77884970875861551795056017255584758932617320976944370747942767089041742432724n, tree);
     expect(result).toEqualCell(beginCell().endCell());
   });
 

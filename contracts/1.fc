@@ -13,8 +13,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-;; testable
-(cell) find_branch_by_hash(int hash, cell tree) method_id {
+(cell) find1(int hash, cell tree) {
   tuple stack = null();
   stack~push_back(tree);
 
@@ -34,14 +33,14 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return begin_cell().end_cell();
 }
 
-(cell) find_branch_by_hash2(int hash, cell tree) method_id {
+(cell) find2(int hash, cell tree) method_id {
   if (hash == tree.cell_hash()) {
     return tree;
   }
   slice tree_slice = tree.begin_parse();
   repeat (tree_slice.slice_refs()) {
     cell branch = tree_slice~load_ref();
-    cell result = find_branch_by_hash2(hash, branch);
+    cell result = find2(hash, branch);
     if (~ result.is_null()) {
       return result;
     }
@@ -49,8 +48,8 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return null();
 }
 
-cell get_branch_by_hash(int hash, cell tree) method_id {
+(cell) find_branch_by_hash(int hash, cell tree) method_id {
 ;;   cell result = find_branch_by_hash2(hash, tree);
 ;;   return result.is_null() ? begin_cell().end_cell() : result;
-  return find_branch_by_hash(hash, tree);
+  return find1(hash, tree);
 }

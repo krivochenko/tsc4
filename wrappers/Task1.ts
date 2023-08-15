@@ -28,8 +28,8 @@ export class Task1 implements Contract {
     });
   }
 
-  async getBranchByHash(provider: ContractProvider, hash: bigint, tree: Cell): Promise<Cell> {
-    const result = await provider.get('get_branch_by_hash', [{
+  async getFindBranchByHash(provider: ContractProvider, hash: bigint, tree: Cell): Promise<Cell> {
+    const result = await provider.get('find_branch_by_hash', [{
       type: 'int',
       value: hash,
     }, {
