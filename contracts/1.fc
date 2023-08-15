@@ -1,7 +1,3 @@
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-
 {-
   TASK 1 - Find branch of the cell tree
   Write the method that will find a branch of the tree by comparing its
@@ -9,6 +5,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   the subtree (branch) whose hash equals the received hash, the root cell of
   this branch should be returned. Return empty cell if the branch is not found.
 -}
+
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 () recv_internal() {
 }
@@ -28,7 +27,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     repeat (branch_slice.slice_refs()) {
       stack~push_back(branch_slice~load_ref());
     }
-  } until (stack.is_null())
+  } until (stack.null?())
 
   return begin_cell().end_cell();
 }
