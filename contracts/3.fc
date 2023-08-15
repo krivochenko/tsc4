@@ -30,6 +30,8 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
   int flag_size = bitsize(flag) - 1;
   int value_size = bitsize(value) - 1;
 
+  slice value_slice = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
+
   builder result = begin_cell();
   tuple result_stack = null();
 
@@ -53,10 +55,9 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
             result = begin_cell().store_uint(value, value_size);
           } else {
             if ((to_current > 0) & (to_next > 0)) {
-              slice paste = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
-              result = result.store_slice(paste~load_bits(to_current));
+              result = result.store_slice(value_slice~load_bits(to_current));
               result_stack~push_back(result);
-              result = begin_cell().store_slice(paste);
+              result = begin_cell().store_slice(value_slice);
             }
           }
         }
