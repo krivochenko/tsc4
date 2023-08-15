@@ -6,31 +6,10 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
-() recv_internal() {
-}
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
-builder encrypt(int shift, slice text, builder result) {
-  while (text.slice_bits()) {
-    int source_code = text~load_uint(8);
-    int cipher_code = source_code;
-    if ((source_code >= 65) & (source_code <= 90)) {
-      cipher_code = 65 + ((source_code - 65 + shift) % 26);
-    }
-    if ((source_code >= 97) & (source_code <= 122)) {
-      cipher_code = 97 + ((source_code - 97 + shift) % 26);
-    }
-    if (result.builder_bits() / 8 < 127) {
-      result = result.store_uint(cipher_code, 8);
-    } else {
-      return result.store_ref(
-              encrypt(shift, text, begin_cell().store_uint(cipher_code, 8)).end_cell()
-      );
-    }
-  }
-  if (text.slice_refs()) {
-    return encrypt(shift, text~load_ref().begin_parse(), result);
-  }
-  return result;
+() recv_internal() {
 }
 
 builder decrypt(int shift, slice text, builder result) {
@@ -59,10 +38,39 @@ builder decrypt(int shift, slice text, builder result) {
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  slice text_slice = text.begin_parse();
-  slice prefix = text_slice~load_bits(32);
+  tuple stack = null();
+  stack~push_back(text.begin_parse().skip_bits(32));
 
-  return encrypt(shift, text_slice, begin_cell().store_slice(prefix)).end_cell();
+  builder result = begin_cell().store_uint(0, 32);
+  tuple result_stack = null();
+
+  do {
+    slice next_slice = stack~pop_back();
+    while (next_slice.slice_bits()) {
+      int symbol_code = next_slice~load_uint(8);
+      if ((symbol_code >= 65) & (symbol_code <= 90)) {
+        result = result.store_uint(65 + ((symbol_code - 65 + shift) % 26), 8);
+      } else {
+        if ((symbol_code >= 97) & (symbol_code <= 122)) {
+          result = result.store_uint(97 + ((symbol_code - 97 + shift) % 26), 8);
+        } else {
+          result = result.store_uint(symbol_code, 8);
+        }
+      }
+    }
+    if (next_slice.slice_refs()) {
+      stack~push_back(next_slice~load_ref().begin_parse());
+      result_stack~push_back(result);
+      result = begin_cell();
+    }
+  } until (stack.null?())
+
+  while (~ result_stack.null?()) {
+    builder part = result_stack~pop_back();
+    result = part.store_ref(result.end_cell());
+  }
+
+  return result.end_cell();
 }
 
 ;; testable
