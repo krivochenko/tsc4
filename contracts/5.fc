@@ -22,7 +22,7 @@
   int prev = -1;
   int last = 0;
   tuple result = empty_tuple();
-  while (i < n + k) {
+  repeat (n + k) {
     int current = (prev < 1) ? prev + 1 : prev + last;
     prev = last;
     last = current;
