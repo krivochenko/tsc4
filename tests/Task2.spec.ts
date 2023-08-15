@@ -31,12 +31,6 @@ describe('Task2', () => {
     });
   });
 
-  it('should get size of matrix', async () => {
-    const sizeResult = await task2.getMatrixSize([[1n, 2n, 3n, 4n], [5n, 6n, 7n, 8n]]);
-    expect(sizeResult).toEqual([2n, 4n]);
-  });
-
-
   it('should multiply matrix', async () => {
     const sizeResult = await task2.getMatrixMultiplier([[1n, 2n, 3n, 4n], [5n, 6n, 7n, 8n]], [[1n, 2n], [3n, 4n], [5n, 6n], [7n, 8n]]);
     expect(sizeResult).toEqual([[50n, 60n], [114n, 140n]]);

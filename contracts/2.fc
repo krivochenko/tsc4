@@ -10,15 +10,15 @@
 -}
 
 (int) tlen(tuple t) asm "TLEN";
-forall X -> X first(tuple t) asm "FIRST";
 
 () recv_internal() {
 }
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  [int, int] [l, m1] = [tlen(matrixA), tlen(first(matrixA))];
-  [int, int] [m2, n] = [tlen(matrixB), tlen(first(matrixB))];
+  int l = tlen(matrixA);
+  int m = tlen(matrixB);
+  int n = tlen(first(matrixB));
 
   tuple result = empty_tuple();
 
@@ -29,7 +29,7 @@ forall X -> X first(tuple t) asm "FIRST";
     while (j < n) {
       int cij = 0;
       int r = 0;
-      while (r < m1) {
+      while (r < m) {
         cij = cij + matrixA.at(i).at(r) * matrixB.at(r).at(j);
         r = r + 1;
       }
