@@ -58,6 +58,7 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
               result = result.store_slice(value_slice~load_bits(to_current));
               result_stack~push_back(result);
               result = begin_cell().store_slice(value_slice);
+              value_slice.end_parse();
             }
           }
         }
