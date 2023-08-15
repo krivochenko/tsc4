@@ -56,8 +56,7 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
           } else {
             if ((to_current > 0) & (to_next > 0)) {
               slice paste = value_slice;
-              result = result.store_slice(paste~load_bits(to_current));
-              result_stack~push_back(result);
+              result_stack~push_back(result.store_slice(paste~load_bits(to_current)));
               result = begin_cell().store_slice(paste);
             }
           }
