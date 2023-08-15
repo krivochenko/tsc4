@@ -1,3 +1,7 @@
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 {-
   TASK 1 - Find branch of the cell tree
   Write the method that will find a branch of the tree by comparing its
@@ -11,19 +15,20 @@
 
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
-  stack = cons(tree, stack);
+  stack~push_back(tree);
 
   do {
-    (cell branch, stack) = uncons(stack);
+    cell branch = stack~pop_back();
+
     if (branch.cell_hash() == hash) {
       return branch;
     }
     slice branch_slice = branch.begin_parse();
 
     repeat (branch_slice.slice_refs()) {
-      stack = cons(branch_slice~load_ref(), stack);
+      stack~push_back(branch_slice~load_ref());
     }
-  } until (stack.null?())
+  } until (stack.is_null())
 
   return begin_cell().end_cell();
 }
