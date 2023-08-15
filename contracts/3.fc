@@ -59,16 +59,22 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
         int to_current = 1023 - result.builder_bits() >= value_size ? value_size : 1023 - result.builder_bits();
         int to_next = value_size - to_current;
 
-        slice paste = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
-
-
-        if (to_current) {
-          result = result.store_slice(paste~load_bits(to_current));
+        if ((to_current > 0) & (to_next == 0)) {
+          result = result.store_uint(value, value_size);
+        } else {
+          if ((to_current == 0) & (to_next > 0)) {
+            result_stack~push_back(result);
+            result = begin_cell().store_uint(value, value_size);
+          } else {
+            if ((to_current > 0) & (to_next > 0)) {
+              slice paste = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
+              result = result.store_slice(paste~load_bits(to_current));
+              result_stack~push_back(result);
+              result = begin_cell().store_slice(paste);
+            }
+          }
         }
-        if (to_next) {
-          result_stack~push_back(result);
-          result = begin_cell().store_slice(paste);
-        }
+
         if (from_current) {
           current~load_bits(from_current);
         }
