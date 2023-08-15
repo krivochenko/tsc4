@@ -1,8 +1,3 @@
-(int) tlen (tuple t) asm "TLEN";
-forall X -> X first(tuple t) asm "FIRST";
-
-forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
-
 {-
   TASK 2 - Matrix multiplier
   Write the method that multiplies one matrix by another.
@@ -13,6 +8,9 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   Matrix can be rectangular where matrixA must to be of size n*m & matrixB of size m*p.
   After calculating the result matrix, the function should return final result (as tuple).
 -}
+
+(int) tlen(tuple t) asm "TLEN";
+forall X -> X first(tuple t) asm "FIRST";
 
 () recv_internal() {
 }

@@ -16,25 +16,8 @@
 
 -}
 
-forall X -> int is_null (X x) asm "ISNULL";
 int equal_slices?(slice a, slice b) asm "SDEQ";
-
 int bitsize(int n) asm "BITSIZE";
-
-slice int_to_bit_string(int n) {
-  builder string = begin_cell();
-  tuple chars = null();
-  do {
-    int r = n~divmod(10);
-    chars = cons(r, chars);
-  } until (n == 0);
-  do {
-    int char = chars~list_next();
-    string~store_uint(char, 1);
-  } until (null?(chars));
-
-  return string.end_cell().begin_parse();
-}
 
 () recv_internal() {
 }
@@ -57,7 +40,7 @@ builder replace(slice search, slice replacement, slice source, builder result) {
   if (current.slice_bits() >= search.slice_bits()) {
     chunk = current.preload_bits(search.slice_bits());
   } else {
-    if (~ is_null(next)) {
+    if (~ null?(next)) {
       from_next = min(search.slice_bits() - current.slice_bits(), next.slice_bits());
       chunk = begin_cell()
               .store_slice(current)
