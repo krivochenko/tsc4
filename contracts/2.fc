@@ -34,10 +34,10 @@
         r = r + 1;
       }
       j = j + 1;
-      row~tpush(cij);
+      row = tpush(row, cij);
     }
     i = i + 1;
-    result~tpush(row);
+    result = tpush(result, row);
   }
 
   return result;
