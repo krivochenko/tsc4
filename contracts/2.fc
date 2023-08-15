@@ -23,13 +23,13 @@
   tuple result = empty_tuple();
 
   int i = 0;
-  while (i < l) {
+  repeat (l) {
     tuple row = empty_tuple();
     int j = 0;
-    while (j < n) {
+    repeat (n) {
       int cij = 0;
       int r = 0;
-      while (r < m) {
+      repeat (m) {
         cij = cij + matrixA.at(i).at(r) * matrixB.at(r).at(j);
         r = r + 1;
       }
