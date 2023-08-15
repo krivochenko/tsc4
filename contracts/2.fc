@@ -15,15 +15,10 @@ forall X -> X first(tuple t) asm "FIRST";
 () recv_internal() {
 }
 
-[int, int] get_matrix_size(tuple matrix) method_id {
-  return [tlen(matrix), tlen(first(matrix))];
-}
-
-
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  [int, int] [l, m1] = get_matrix_size(matrixA);
-  [int, int] [m2, n] = get_matrix_size(matrixB);
+  [int, int] [l, m1] = [tlen(matrixA), tlen(first(matrixA))];
+  [int, int] [m2, n] = [tlen(matrixB), tlen(first(matrixB))];
 
   tuple result = empty_tuple();
 
