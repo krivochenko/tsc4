@@ -33,16 +33,17 @@ builder replace(slice search, slice replacement, slice source, builder result) {
 
   slice chunk = "";
   slice paste = "";
+  slice current = source;
   slice next = source.slice_refs() ? source.preload_ref().begin_parse() : null();
   int from_next = 0;
 
-  if (source.slice_bits() >= search.slice_bits()) {
-    chunk = source.preload_bits(search.slice_bits());
+  if (current.slice_bits() >= search.slice_bits()) {
+    chunk = current.preload_bits(search.slice_bits());
   } else {
     if (~ null?(next)) {
-      from_next = min(search.slice_bits() - source.slice_bits(), next.slice_bits());
+      from_next = min(search.slice_bits() - current.slice_bits(), next.slice_bits());
       chunk = begin_cell()
-              .store_slice(source)
+              .store_slice(current)
               .store_slice(next.preload_bits(from_next))
               .end_cell()
               .begin_parse();
@@ -52,23 +53,23 @@ builder replace(slice search, slice replacement, slice source, builder result) {
   if (equal_slices?(chunk, search)) {
     paste = replacement;
     if (from_next) {
-      source = next;
-      source~load_bits(from_next);
+      current = next;
+      current~load_bits(from_next);
     } else {
-      source~load_bits(search.slice_bits());
+      current~load_bits(search.slice_bits());
     }
   } else {
-    paste = source~load_bits(1);
+    paste = current~load_bits(1);
   }
 
   if (paste.slice_bits() <= 1023 - result.builder_bits()) {
     result = result.store_slice(paste);
-    return replace(search, replacement, source, result);
+    return replace(search, replacement, current, result);
   }
   slice first_part = paste~load_bits((1023 - result.builder_bits()));
   result = result.store_slice(first_part);
   return result.store_ref(
-          replace(search, replacement, source, begin_cell().store_slice(paste)).end_cell()
+          replace(search, replacement, current, begin_cell().store_slice(paste)).end_cell()
   );
 }
 
