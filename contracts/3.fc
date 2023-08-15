@@ -23,7 +23,6 @@ int bitsize(int n) asm "BITSIZE";
 }
 
 builder replace(slice search, slice replacement, slice source, builder result) {
-  int search_length = search.slice_bits();
   if (source.slice_bits() == 0) {
     if (source.slice_refs() > 0) {
       return replace(search, replacement, source~load_ref().begin_parse(), result);
@@ -38,11 +37,11 @@ builder replace(slice search, slice replacement, slice source, builder result) {
   slice next = source.slice_refs() ? source.preload_ref().begin_parse() : null();
   int from_next = 0;
 
-  if (current.slice_bits() >= search_length) {
-    chunk = current.preload_bits(search_length);
+  if (current.slice_bits() >= search.slice_bits()) {
+    chunk = current.preload_bits(search.slice_bits());
   } else {
     if (~ null?(next)) {
-      from_next = min(search_length - current.slice_bits(), next.slice_bits());
+      from_next = min(search.slice_bits() - current.slice_bits(), next.slice_bits());
       chunk = begin_cell()
               .store_slice(current)
               .store_slice(next.preload_bits(from_next))
@@ -57,7 +56,7 @@ builder replace(slice search, slice replacement, slice source, builder result) {
       current = next;
       current~load_bits(from_next);
     } else {
-      current~load_bits(search_length);
+      current~load_bits(search.slice_bits());
     }
   } else {
     paste = current~load_bits(1);
