@@ -16,71 +16,87 @@
 
 -}
 
-int equal_slices?(slice a, slice b) asm "SDEQ";
 int bitsize(int n) asm "BITSIZE";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 () recv_internal() {
 }
 
-builder replace(slice search, slice replacement, slice source, builder result) {
-  if (source.slice_bits() == 0) {
-    if (source.slice_refs() > 0) {
-      return replace(search, replacement, source~load_ref().begin_parse(), result);
-    } else {
-      return result;
-    }
+(int) binpow (int n, int e) {
+  if (e == 0) {
+    return 1;
   }
-
-  slice chunk = "";
-  slice paste = "";
-  slice current = source;
-  slice next = source.slice_refs() ? source.preload_ref().begin_parse() : null();
-  int from_next = 0;
-
-  if (current.slice_bits() >= search.slice_bits()) {
-    chunk = current.preload_bits(search.slice_bits());
-  } else {
-    if (~ null?(next)) {
-      from_next = min(search.slice_bits() - current.slice_bits(), next.slice_bits());
-      chunk = begin_cell()
-              .store_slice(current)
-              .store_slice(next.preload_bits(from_next))
-              .end_cell()
-              .begin_parse();
-    }
+  if (e == 1) {
+    return n;
   }
-
-  if (equal_slices?(chunk, search)) {
-    paste = replacement;
-    if (from_next) {
-      current = next;
-      current~load_bits(from_next);
-    } else {
-      current~load_bits(search.slice_bits());
-    }
-  } else {
-    paste = current~load_bits(1);
+  int p = binpow(n, e / 2);
+  p *= p;
+  if ((e % 2) == 1) {
+    p *= n;
   }
-
-  if (paste.slice_bits() <= 1023 - result.builder_bits()) {
-    result = result.store_slice(paste);
-    return replace(search, replacement, current, result);
-  }
-  slice first_part = paste~load_bits((1023 - result.builder_bits()));
-  result = result.store_slice(first_part);
-  return result.store_ref(
-          replace(search, replacement, current, begin_cell().store_slice(paste)).end_cell()
-  );
+  return p;
 }
 
 ;; testable
 cell find_and_replace(int flag, int value, cell linked_list) method_id {
-  slice source = linked_list.begin_parse();
+  slice current = linked_list.begin_parse();
+  int flag_size = bitsize(flag) - 1;
+  int value_size = bitsize(value) - 1;
+
   builder result = begin_cell();
+  tuple result_stack = null();
 
-  slice search = begin_cell().store_uint(flag, bitsize(flag) - 1).end_cell().begin_parse();
-  slice replacement = begin_cell().store_uint(value, bitsize(value) - 1).end_cell().begin_parse();
+  do {
+    slice next = current.slice_refs() ? current~load_ref().begin_parse() : null();
+    while (current.slice_bits()) {
+      int from_current = min(128, min(current.slice_bits(), flag_size));
+      int from_next = next.null?() ? 0 : min(next.slice_bits(), flag_size - from_current);
 
-  return replace(search, replacement, source, result).end_cell();
+      int fragment = current.preload_uint(from_current) * binpow(2, from_next) + (from_next ? next.preload_uint(from_next) : 0);
+
+      if (fragment == flag) {
+        int to_current = 1023 - result.builder_bits() >= value_size ? value_size : 1023 - result.builder_bits();
+        int to_next = value_size - to_current;
+
+        if ((to_current > 0) & (to_next == 0)) {
+          result = result.store_uint(value, value_size);
+        } else {
+          if ((to_current == 0) & (to_next > 0)) {
+            result_stack~push_back(result);
+            result = begin_cell().store_uint(value, value_size);
+          } else {
+            if ((to_current > 0) & (to_next > 0)) {
+              slice paste = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
+              result = result.store_slice(paste~load_bits(to_current));
+              result_stack~push_back(result);
+              result = begin_cell().store_slice(paste);
+            }
+          }
+        }
+
+        if (from_current) {
+          current~load_bits(from_current);
+        }
+        if (from_next) {
+          next~load_bits(from_next);
+        }
+      } else {
+        if (1023 - result.builder_bits()) {
+          result = result.store_slice(current~load_bits(1));
+        } else {
+          result_stack~push_back(result);
+          result = begin_cell().store_slice(current~load_bits(1));
+        }
+      }
+    }
+    current = next;
+  } until (current.null?());
+
+  while (~ result_stack.null?()) {
+    builder part = result_stack~pop_back();
+    result = part.store_ref(result.end_cell());
+  }
+
+  return result.end_cell();
 }
-
