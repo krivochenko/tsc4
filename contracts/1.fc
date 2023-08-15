@@ -34,6 +34,23 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return begin_cell().end_cell();
 }
 
+(cell) find_branch_by_hash2(int hash, cell tree) method_id {
+  if (hash == tree.cell_hash()) {
+    return tree;
+  }
+  slice tree_slice = tree.begin_parse();
+  repeat (tree_slice.slice_refs()) {
+    cell branch = tree_slice~load_ref();
+    cell result = find_branch_by_hash2(hash, branch);
+    if (~ result.is_null()) {
+      return result;
+    }
+  }
+  return null();
+}
+
 cell get_branch_by_hash(int hash, cell tree) method_id {
-  return find_branch_by_hash(hash, tree);
+  cell result = find_branch_by_hash2(hash, tree);
+  return result.is_null() ? begin_cell().end_cell() : result;
+;;   return find_branch_by_hash(hash, tree);
 }
