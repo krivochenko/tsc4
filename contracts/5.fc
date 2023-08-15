@@ -18,12 +18,18 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  int i = 0;
-  int prev = -1;
-  int last = 0;
   tuple result = empty_tuple();
-  repeat (n + k) {
-    int current = (prev < 1) ? prev + 1 : prev + last;
+  if ((n == 0) & (k > 0)) {
+    result~tpush(0);
+  }
+  if (((n == 1) & (k > 0)) | ((n == 0) & (k > 1))) {
+    result~tpush(1);
+  }
+  int i = 2;
+  int prev = 0;
+  int last = 1;
+  repeat (n + k - 2) {
+    int current = prev + last;
     prev = last;
     last = current;
     if (i >= n) {
