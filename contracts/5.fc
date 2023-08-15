@@ -16,10 +16,6 @@
 () recv_internal() {
 }
 
-(int, (int)) next_element(int prev, int last) {
-  return (last, (prev + last));
-}
-
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   tuple result = empty_tuple();
@@ -33,9 +29,11 @@
   int prev = 0;
   int last = 1;
   repeat (n + k - 2) {
-    last = prev~next_element(last);
+    int current = prev + last;
+    prev = last;
+    last = current;
     if (i >= n) {
-      result~tpush(last);
+      result~tpush(current);
     }
     i = i + 1;
   }
