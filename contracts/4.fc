@@ -21,7 +21,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
   do {
     slice next_slice = stack~pop_back();
-    while (next_slice.slice_bits()) {
+    repeat (next_slice.slice_bits() / 8) {
       int symbol_code = next_slice~load_uint(8);
       if ((symbol_code >= 65) & (symbol_code <= 90)) {
         result = result.store_uint(65 + ((symbol_code - 65 + shift) % 26), 8);
