@@ -53,9 +53,8 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
             result_stack~push_back(result);
             result = begin_cell().store_uint(value, value_size);
           } else {
-            slice paste = value_slice;
-            result_stack~push_back(result.store_slice(paste~load_bits(to_current)));
-            result = begin_cell().store_slice(paste);
+            result_stack~push_back(result.store_slice(value_slice.preload_bits(to_current)));
+            result = begin_cell().store_slice(value_slice.slice_last(value_size - to_current));
           }
         }
 
