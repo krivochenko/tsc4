@@ -34,6 +34,7 @@ export class Task3 implements Contract {
       { type: 'int', value },
       { type: 'cell', cell: text },
     ]);
+    console.log(result.gasUsed);
     return result.stack.readCell();
   }
 }

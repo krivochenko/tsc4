@@ -12,20 +12,24 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
+;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
+  if (tree.cell_hash() == hash) {
+    return tree;
+  }
   tuple stack = null();
   stack~push_back(tree);
 
   do {
     cell branch = stack~pop_back();
-
-    if (branch.cell_hash() == hash) {
-      return branch;
-    }
     slice branch_slice = branch.begin_parse();
 
     repeat (branch_slice.slice_refs()) {
-      stack~push_back(branch_slice~load_ref());
+      cell child = branch_slice~load_ref();
+      if (child.cell_hash() == hash) {
+        return child;
+      }
+      stack~push_back(child);
     }
   } until (stack.null?())
 

@@ -36,6 +36,7 @@ export class Task1 implements Contract {
       type: 'cell',
       cell: tree,
     }]);
+    console.log(result.gasUsed);
     return result.stack.readCell();
   }
 }
