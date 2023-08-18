@@ -38,7 +38,7 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
   do {
     slice next = current.slice_refs() ? current~load_ref().begin_parse() : null();
     while (current.slice_bits()) {
-      int from_current = min(128, min(current.slice_bits(), flag_size));
+      int from_current = min(current.slice_bits(), flag_size);
       int from_next = next.null?() ? 0 : min(next.slice_bits(), flag_size - from_current);
 
       int fragment = current.preload_uint(from_current) * pow2(from_next) + (from_next ? next.preload_uint(from_next) : 0);
