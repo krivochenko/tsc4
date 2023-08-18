@@ -41,7 +41,21 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
       int from_current = min(current.slice_bits(), flag_size);
       int from_next = next.null?() ? 0 : min(next.slice_bits(), flag_size - from_current);
 
-      int fragment = current.preload_uint(from_current) * pow2(from_next) + (from_next ? next.preload_uint(from_next) : 0);
+      int fragment = null();
+      if (current.slice_bits() >= flag_size) {
+        fragment = current.preload_uint(flag_size);
+      } else {
+        if (~ next.null?()) {
+          if (next.slice_bits() + current.slice_bits() >= flag_size) {
+            fragment = current.preload_uint(current.slice_bits()) * pow2(flag_size - current.slice_bits()) + next.preload_uint(flag_size - current.slice_bits());
+          } else {
+            fragment = current.preload_uint(current.slice_bits()) * pow2(flag_size - current.slice_bits()) + next.preload_uint(next.slice_bits());
+          }
+        } else {
+          fragment = current.preload_uint(current.slice_bits());
+        }
+      }
+
 
       if (fragment == flag) {
         if (1023 - result.builder_bits() >= value_size) {
