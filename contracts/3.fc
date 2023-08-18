@@ -26,9 +26,6 @@ int pow2(int n) asm "POW2";
 
 ;; testable
 cell find_and_replace(int flag, int value, cell linked_list) method_id {
-  if (flag == value) {
-    return linked_list;
-  }
   slice current = linked_list.begin_parse();
   int flag_size = bitsize(flag) - 1;
   int value_size = bitsize(value) - 1;
