@@ -44,14 +44,14 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
 
       int fragment = null();
       if (current.slice_bits() >= flag_size) {
-        fragment = current.preload_uint(flag_size);
+        fragment = current.preload_uint(from_current);
       } else {
         if (~ next.null?()) {
           if (next.slice_bits() + current.slice_bits() >= flag_size) {
             fragment = current.preload_uint(from_current) * pow2(from_next) + next.preload_uint(from_next);
           }
         } else {
-          fragment = current.preload_uint(current.slice_bits());
+          fragment = current.preload_uint(from_current);
         }
       }
 
