@@ -41,8 +41,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   } until (stack.null?())
 
   while (~ result_stack.null?()) {
-    builder part = result_stack~pop_back();
-    result = part.store_ref(result.end_cell());
+    result = result_stack~pop_back().store_ref(result.end_cell());
   }
 
   return result.end_cell();

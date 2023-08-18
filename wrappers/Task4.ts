@@ -33,7 +33,7 @@ export class Task4 implements Contract {
       { type: 'int', value: shift },
       { type: 'cell', cell: text },
     ]);
-
+    console.log(result.gasUsed);
     return result.stack.readCell();
   }
 
@@ -42,7 +42,7 @@ export class Task4 implements Contract {
       { type: 'int', value: shift },
       { type: 'cell', cell: text },
     ]);
-
+    console.log(result.gasUsed);
     return result.stack.readCell();
   }
 }
