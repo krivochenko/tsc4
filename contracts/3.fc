@@ -38,40 +38,32 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
   do {
     slice next = current.slice_refs() ? current~load_ref().begin_parse() : null();
     while (current.slice_bits()) {
-      int fragment = null();
-      if (current.slice_bits() >= flag_size) {
-        fragment = current.preload_uint(flag_size);
-      } else {
-        if (~ next.null?()) {
-          if (next.slice_bits() + current.slice_bits() >= flag_size) {
-;;             ~dump(flag_size - current.slice_bits());
-            fragment = current.preload_uint(current.slice_bits()) * pow2(flag_size - current.slice_bits()) + next.preload_uint(flag_size - current.slice_bits());
-;;             ~dump(fragment);
-          }
-        } else {
-          fragment = current.preload_uint(current.slice_bits());
-        }
-      }
+      int from_current = min(128, min(current.slice_bits(), flag_size));
+      int from_next = next.null?() ? 0 : min(next.slice_bits(), flag_size - from_current);
+
+      int fragment = current.preload_uint(from_current) * pow2(from_next) + (from_next ? next.preload_uint(from_next) : 0);
 
       if (fragment == flag) {
-        if (1023 - result.builder_bits() > value_size) {
+        int to_current = 1023 - result.builder_bits() >= value_size ? value_size : 1023 - result.builder_bits();
+
+        if (to_current == value_size) {
           result = result.store_uint(value, value_size);
         } else {
-          if (result.builder_bits() == 1023) {
+          if (to_current == 0) {
             result_stack~push_back(result);
             result = begin_cell().store_uint(value, value_size);
           } else {
             slice paste = value_slice;
-            result_stack~push_back(result.store_slice(paste~load_bits(1023 - result.builder_bits())));
+            result_stack~push_back(result.store_slice(paste~load_bits(to_current)));
             result = begin_cell().store_slice(paste);
           }
         }
 
-        if (current.slice_bits() >= flag_size) {
-          current~load_bits(flag_size);
-        } else {
-          next~load_bits(flag_size - current.slice_bits());
-          current~load_bits(current.slice_bits());
+        if (from_current) {
+          current~load_bits(from_current);
+        }
+        if (from_next) {
+          next~load_bits(from_next);
         }
       } else {
         if (1023 - result.builder_bits()) {
