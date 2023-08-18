@@ -42,14 +42,14 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
       if (current.slice_bits() >= flag_size) {
         fragment = current.preload_uint(flag_size);
       } else {
-        if (~ next.null?()) {
+        if (next.null?()) {
+          fragment = current.preload_uint(current.slice_bits());
+        } else {
           if (next.slice_bits() + current.slice_bits() >= flag_size) {
             fragment = current.preload_uint(current.slice_bits()) * pow2(flag_size - current.slice_bits()) + next.preload_uint(flag_size - current.slice_bits());
           } else {
             fragment = current.preload_uint(current.slice_bits()) * pow2(flag_size - current.slice_bits()) + next.preload_uint(next.slice_bits());
           }
-        } else {
-          fragment = current.preload_uint(current.slice_bits());
         }
       }
 
