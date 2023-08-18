@@ -60,10 +60,10 @@ cell find_and_replace(int flag, int value, cell linked_list) method_id {
         }
 
         if (from_current) {
-          current~load_bits(from_current);
+          current~skip_bits(from_current);
         }
         if (from_next) {
-          next~load_bits(from_next);
+          next~skip_bits(from_next);
         }
       } else {
         if (1023 - result.builder_bits()) {
